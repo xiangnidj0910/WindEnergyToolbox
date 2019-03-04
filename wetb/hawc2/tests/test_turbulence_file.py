@@ -30,7 +30,7 @@ class TestPCFile(unittest.TestCase):
 
     def test_load_from_htc(self):
         u, v, w = TurbulenceFile.load_from_htc(tfp + "htcfiles/test_turb.htc")
-        self.assertEqual(u.data.shape, (512, 1024))
+        self.assertEqual(u.data.shape, (512, 64))
 
 
 if __name__ == "__main__":
