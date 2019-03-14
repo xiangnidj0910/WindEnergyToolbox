@@ -11,6 +11,7 @@ from io import open
 from builtins import str
 from builtins import zip
 from future import standard_library
+from wetb.utils.threadnames import name
 standard_library.install_aliases()
 import os
 import unittest
@@ -96,6 +97,17 @@ class TestHtcFile(unittest.TestCase):
         htcfile = HTCFile(self.testfilepath + "test.htc")
         htcfile.simulation.name = "value"
         self.assertEqual(htcfile.simulation.name[0], "value")
+        htcfile.simulation.name2 = ("value", 1)
+        self.assertEqual(htcfile.simulation.name2[0], "value")
+        self.assertEqual(htcfile.simulation.name2[1], 1)
+
+    def test_htc_file_set_key2(self):
+        htcfile = HTCFile(self.testfilepath + "test.htc")
+        htcfile.simulation['name'] = "value"
+        self.assertEqual(htcfile.simulation.name[0], "value")
+        htcfile.simulation['name2'] = ("value", 1)
+        self.assertEqual(htcfile.simulation.name2[0], "value")
+        self.assertEqual(htcfile.simulation.name2[1], 1)
 
     def test_htc_file_del_key(self):
         htcfile = HTCFile(self.testfilepath + "test.htc")
