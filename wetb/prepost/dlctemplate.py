@@ -374,7 +374,7 @@ def launch_dlcs_excel(sim_id, silent=False, verbose=False, pbs_turb=False,
                               ppn=20, nr_procs_series=3, walltime='20:00:00',
                               chunks_dir='zip-chunks-jess', compress=compress,
                               wine_arch=wine_arch, wine_prefix=wine_prefix,
-                              prelude=prelude)
+                              prelude=prelude, ppn_pbs=20)
 #        create_chunks_htc_pbs(cases, sort_by_values=sorts_on, queue='workq',
 #                              ppn=12, nr_procs_series=3, walltime='20:00:00',
 #                              chunks_dir='zip-chunks-gorm', compress=compress,
@@ -598,8 +598,8 @@ def postpro_node_merge(tqdm=False, zipchunks=False, m=[3,4,6,8,9,10,12]):
     cc = sim.Cases(POST_DIR, sim_id)
     df_tags = cc.cases2df()
     df_stats = pd.merge(df, df_tags[required], on=['[case_id]'])
-    # if the merge didn't work due to other misaligned case_id tags, do not
-    # overwrite our otherwise ok tables!
+    # find out if we have some misalignment between generated cases and results
+    # this could happen when we added new cases and removed others
     if len(df_stats) != len(df):
         print('failed to merge required tags, something is wrong!')
         # find out which cases we lost and why
@@ -610,8 +610,12 @@ def postpro_node_merge(tqdm=False, zipchunks=False, m=[3,4,6,8,9,10,12]):
         msg = 'nr of case_ids lost:'
         print(msg, (len(df)-len(df_stats))/len(df['channel'].unique()))
         print('following case_ids have mysteriously disappeared:')
-        print(s_df-s_stats)
-        return
+        missing = s_df-s_stats
+        print(missing)
+        # save misalligned cases
+        fname = os.path.join(POST_DIR, '%s_misallgined_cases.tsv' % sim_id)
+        pd.DataFrame(missing).to_csv(fname, sep='\t')
+
     df_stats.to_hdf(fdf, 'table', mode='w')
     df_stats.to_csv(fdf.replace('.h5', '.csv'))
 
@@ -626,7 +630,7 @@ def postpro_node_merge(tqdm=False, zipchunks=False, m=[3,4,6,8,9,10,12]):
 def prepare_failed(compress=False, wine_arch='win32', wine_prefix='~/.wine32',
                    prelude='', zipchunks=False):
 
-    cc = sim.Cases(POST_DIR, sim_id)
+    cc = sim.Cases(POST_DIR, sim_id, rem_failed=False)
     df_tags = cc.cases2df()
 
     # -------------------------------------------------------------------------
