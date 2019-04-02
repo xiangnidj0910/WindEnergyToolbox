@@ -104,6 +104,10 @@ class SSHClient(object):
         self.host = host
         self.username = username
         self.password = password
+        if password is None and key is None:
+            from os.path import expanduser
+            home = expanduser("~")
+            key = home + '/.ssh/id_rsa'
         self.port = port
         self.key = key
         self.gateway = gateway
@@ -117,7 +121,8 @@ class SSHClient(object):
         self.counter_lock = threading.RLock()
         self.counter = 0
         if key is not None:
-            self.key = paramiko.RSAKey.from_private_key(StringIO(key), password=passphrase)
+            with open(key) as fid:
+                self.key = paramiko.RSAKey.from_private_key(fid, password=passphrase)
 
     def info(self):
         return self.host, self.username, self.password, self.port
@@ -164,7 +169,7 @@ class SSHClient(object):
             self.client.connect("127.0.0.1", 10022, username=self.username, password=self.password)
             print("done")
 
-        elif self.password is None or self.password == "":
+        elif self.key is None and (self.password is None or self.password == ""):
             raise IOError("Password not set for %s" % self.host)
         else:
             self.client = paramiko.SSHClient()
