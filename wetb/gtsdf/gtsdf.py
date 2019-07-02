@@ -133,7 +133,10 @@ def _load_info(f):
         info['attribute_units'] = [v.decode('latin1') for v in f['attribute_units']]
     if 'attribute_descriptions' in f:
         info['attribute_descriptions'] = [v.decode('latin1') for v in f['attribute_descriptions']]
-    info['dtype'] = f[block_name_fmt % 0]['data'].dtype
+    try:
+        info['dtype'] = f[block_name_fmt % 0]['data'].dtype
+    except:
+        pass
     return info
 
 
@@ -160,7 +163,7 @@ def _load_timedata(f, dtype):
 
         try:
             block = f[block_name_fmt % i]
-        except KeyError:
+        except Error:
             continue
         no_observations, no_attributes = block['data'].shape
         block_time = (block.get('time', np.arange(no_observations))[:]).astype(np.float64)
