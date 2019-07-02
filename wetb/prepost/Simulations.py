@@ -2622,7 +2622,11 @@ class PBS(object):
             except OSError:
                 size_sel = 0
                 size_dat = 0
-            if size_sel < 5 or size_dat < 5:
+            try:
+                size_hdf = os.stat(f_res + '.hdf5').st_size
+            except OSError:
+                size_hdf = 0
+            if (size_sel < 5 or size_dat < 5) and size_hdf < 5:
                 cases_fail[cname] = copy.copy(cases[cname])
 
         if not self.silent:
@@ -4430,7 +4434,7 @@ class Cases(object):
             # if we have a list, convert to string
             if type(col[0]).__name__ == 'list':
                 for ii, item in enumerate(col):
-                    col[ii] = '**'.join(item)
+                    col[ii] = '*;*'.join(item)
             # if we already have an array (statistics) or a list of numbers
             # do not try to cast into another data type, because downcasting
             # in that case will not raise any exception
@@ -4671,7 +4675,7 @@ class Cases(object):
 
     def AEP(self, dfs, fh_lst=None, ch_powe='DLL-2-inpvec-2', extra_cols=[],
             res_dir='res/', dlc_folder="dlc%s_iec61400-1ed3/", csv=False,
-            new_sim_id=False, save=False, years=20.0, update=False, xlsx=False):
+            new_sim_id=False, save=False, update=False, xlsx=False):
 
         """
         Calculate the Annual Energy Production (AEP) for DLC1.2 cases.

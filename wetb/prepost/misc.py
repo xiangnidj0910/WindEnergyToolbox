@@ -741,7 +741,7 @@ def read_excel_files(proot, fext='xlsx', pignore=None, sheet=0,
                 if fext == 'csv':
                     df = pd.read_csv(f_target)
                 else:
-                    df = pd.read_excel(f_target, sheetname=sheet)
+                    df = pd.read_excel(f_target, sheet_name=sheet)
                 df_list[f_target.replace('.'+fext, '')] = df
                 if not silent:
                     print(': sucesfully included %i case(s)' % len(df))
@@ -1118,7 +1118,7 @@ def df_dict_check_datatypes(df_dict):
         # if we have a list, convert to string
         elif type(col[0]).__name__ == 'list':
             for ii, item in enumerate(col):
-                col[ii] = '**'.join(item)
+                col[ii] = '*;*'.join(item)
         # if we already have an array (statistics) or a list of numbers
         # do not try to cast into another data type, because downcasting
         # in that case will not raise any exception
