@@ -460,8 +460,8 @@ def post_launch(sim_id, statistics=True, rem_failed=True, check_logs=True,
         # mechanism to figure out which one of two expected values it is.
         if 'DLL-2-inpvec-2' in df_stats['channel'].unique():
             ch_powe = 'DLL-2-inpvec-2'
-        elif 'DLL-dtu_we_controller-inpvec-2' in df_stats['channel'].unique():
-            ch_powe = 'DLL-dtu_we_controller-inpvec-2'
+        elif 'DLL-generator_servo-inpvec-2' in df_stats['channel'].unique():
+            ch_powe = 'DLL-generator_servo-inpvec-2'
 
         df_AEP = cc.AEP(df_stats, csv=csv, update=update, save=True,
                         ch_powe=ch_powe)
@@ -610,7 +610,7 @@ def postpro_node_merge(tqdm=False, zipchunks=False, m=[3,4,6,8,9,10,12]):
         msg = 'nr of case_ids lost:'
         print(msg, (len(df)-len(df_stats))/len(df['channel'].unique()))
         print('following case_ids have mysteriously disappeared:')
-        missing = s_df-s_stats
+        missing = list(s_df-s_stats)
         print(missing)
         # save misalligned cases
         fname = os.path.join(POST_DIR, '%s_misallgined_cases.tsv' % sim_id)
