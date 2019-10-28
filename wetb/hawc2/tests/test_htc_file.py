@@ -398,7 +398,7 @@ end turb_export;"""
         assert htc.new_htc_structure.main_body__8 is tower2
         assert htc.new_htc_structure.main_body.name[0] == 'tower'
         assert htc.new_htc_structure.main_body__8.name[0] == 'tower2'
-        ti2 = tower2.add_section(name='timoschenko_input',
+        ti2 = tower2.add_section(section_name='timoschenko_input',
                                  section=tower2.timoschenko_input.copy(), allow_duplicate=True)
         ti2.set = 3, 3
         assert tower2.timoschenko_input.set.values == [1, 2]
